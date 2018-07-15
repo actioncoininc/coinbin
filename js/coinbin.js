@@ -1118,7 +1118,9 @@ $(document).ready(function() {
  					// $.each($(data).find("unspent").children(), function(i,o){
 					$.each(data, function(i,o){
                 				
-						var tx = o.txid;
+						// var tx = o.txid;
+						// need to reverse txid here, bcz explorer returns already reversed txid in human readable format
+						var tx = ((o.txid).match(/.{1,2}/g).reverse()).join("")+'';	
 						var n = o.vout;
 						var script = (redeem.redeemscript==true) ? redeem.decodedRs : o.scriptPubKey;
 		                                var amount = ((o.satoshis*1)/100000000).toFixed(8);
