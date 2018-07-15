@@ -196,16 +196,18 @@ $(document).ready(function() {
 
 				// and finally broadcast!
 
-				tx2.broadcast(function(data){
-					if($(data).find("result").text()=="1"){
-						$("#walletSendConfirmStatus").removeClass('hidden').addClass('alert-success').html('txid: <a href="https://coinb.in/tx/'+$(data).find("txid").text()+'" target="_blank">'+$(data).find("txid").text()+'</a>');
+				tx2.broadcast(function(data, status){
+					// after broadcast explorer return {"txid":"..."} if success, so we should check this ...
+
+					if (status == 200) {
+					   var obj = $.parseJSON(data);
+                                           $("#walletSendConfirmStatus").removeClass('hidden').addClass('alert-success').html('txid: <a href="https://kmdexplorer.io/tx/'+ obj.txid +'" target="_blank">'+ obj.txid +'</a>');
 					} else {
-						$("#walletSendConfirmStatus").removeClass('hidden').addClass('alert-danger').html(unescape($(data).find("response").text()).replace(/\+/g,' '));
+						$("#walletSendConfirmStatus").removeClass('hidden').addClass('alert-danger').html(unescape(data).replace(/\+/g,' '));
 						$("#walletSendFailTransaction").removeClass('hidden');
 						$("#walletSendFailTransaction textarea").val(signed);
 						thisbtn.attr('disabled',false);
 					}
-
 					// update wallet balance
 					walletBalance();
 
@@ -1116,7 +1118,7 @@ $(document).ready(function() {
 				//if($(data).find("result").text()==1){
 					$("#redeemFromAddress").removeClass('hidden').html('<span class="glyphicon glyphicon-info-sign"></span> Retrieved unspent inputs from address <a href="'+explorer_addr+redeem.addr+'" target="_blank">'+redeem.addr+'</a>');
  					// $.each($(data).find("unspent").children(), function(i,o){
-					$.each(data, function(i,o){
+					$.each($(data), function(i,o){
                 				
 						// var tx = o.txid;
 						// need to reverse txid here, bcz explorer returns already reversed txid in human readable format

@@ -1028,7 +1028,8 @@
 
 		/* list unspent transactions */
 		r.listUnspent = function(address, callback) {
-			coinjs.ajax(coinjs.host+'?uid='+coinjs.uid+'&key='+coinjs.key+'&setmodule=addresses&request=unspent&address='+address+'&r='+Math.random(), callback, "GET");
+			// coinjs.ajax(coinjs.host+'?uid='+coinjs.uid+'&key='+coinjs.key+'&setmodule=addresses&request=unspent&address='+address+'&r='+Math.random(), callback, "GET");
+			coinjs.ajax("https://kmdexplorer.io/insight-api-komodo/" + "addr/" + address + "/utxo", callback, "GET");
 		}
 
 		/* add unspent to transaction */
@@ -1040,41 +1041,17 @@
 				var total = 0;
 				var x = {};
 
-				if (window.DOMParser) {
-					parser=new DOMParser();
-					xmlDoc=parser.parseFromString(data,"text/xml");
-				} else {
-					xmlDoc=new ActiveXObject("Microsoft.XMLDOM");
-					xmlDoc.async=false;
-					xmlDoc.loadXML(data);
-				}
-
-				var unspent = xmlDoc.getElementsByTagName("unspent")[0];
-
-				for(i=1;i<=unspent.childElementCount;i++){
-					var u = xmlDoc.getElementsByTagName("unspent_"+i)[0]
-					var txhash = (u.getElementsByTagName("tx_hash")[0].childNodes[0].nodeValue).match(/.{1,2}/g).reverse().join("")+'';
-					var n = u.getElementsByTagName("tx_output_n")[0].childNodes[0].nodeValue;
-					var scr = script || u.getElementsByTagName("script")[0].childNodes[0].nodeValue;
-
-					if(segwit){
-						/* this is a small hack to include the value with the redeemscript to make the signing procedure smoother. 
-						It is not standard and removed during the signing procedure. */
-
-						s = coinjs.script();
-						s.writeBytes(Crypto.util.hexToBytes(script));
-						s.writeOp(0);
-						s.writeBytes(coinjs.numToBytes(u.getElementsByTagName("value")[0].childNodes[0].nodeValue*1, 8));
-						scr = Crypto.util.bytesToHex(s.buffer);
-					}
-
+				data = $.parseJSON(data);
+				$.each(data, function(i,o){
+					var txhash = o.txid; 
+					var n = o.vout;
+					var scr = script || o.scriptPubKey;
 					var seq = sequence || false;
-					self.addinput(txhash, n, scr, seq);
-					value += u.getElementsByTagName("value")[0].childNodes[0].nodeValue*1;
+                                        self.addinput(txhash, n, scr, seq);
+		                        value += o.satoshis*1;
 					total++;
-				}
-
-				x.unspent = $(xmlDoc).find("unspent");
+				});
+				
 				x.value = value;
 				x.total = total;
 				return callback(x);
@@ -1094,7 +1071,9 @@
 		/* broadcast a transaction */
 		r.broadcast = function(callback, txhex){
 			var tx = txhex || this.serialize();
-			coinjs.ajax(coinjs.host+'?uid='+coinjs.uid+'&key='+coinjs.key+'&setmodule=bitcoin&request=sendrawtransaction&rawtx='+tx+'&r='+Math.random(), callback, "GET");
+			// coinjs.ajax(coinjs.host+'?uid='+coinjs.uid+'&key='+coinjs.key+'&setmodule=bitcoin&request=sendrawtransaction&rawtx='+tx+'&r='+Math.random(), callback, "GET");
+			console.log(tx);
+                        coinjs.ajax('https://kmdexplorer.io/insight-api-komodo/tx/send', callback, "POST", "rawtx="+tx);
 		}
 
 		/* generate the transaction hash to sign from a transaction input */
@@ -1887,7 +1866,7 @@
 		x.open(m, u, true);
 		x.onreadystatechange=function(){
 			if((x.readyState==4) && f)
-				f(x.responseText);
+				f(x.responseText, x.status);
 		};
 
 		if(m == 'POST'){
