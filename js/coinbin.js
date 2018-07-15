@@ -301,12 +301,23 @@ $(document).ready(function() {
 		$("#walletLoader").removeClass("hidden");
 		coinjs.addressBalance($("#walletAddress").html(),function(data){
 			// console.log("[addressBalance] data = " + data);
+	
+			/*
 			if($(data).find("result").text()==1){
 				var v = $(data).find("balance").text()/100000000;
 				$("#walletBalance").html(v+" KMD").attr('rel',v).fadeOut().fadeIn();
 			} else {
 				$("#walletBalance").html("0.00 KMD").attr('rel',v).fadeOut().fadeIn();
 			}
+			*/
+
+			if(parseInt(data)!=NaN){
+				var v = data/100000000;
+				$("#walletBalance").html(v+" KMD").attr('rel',v).fadeOut().fadeIn();
+			} else {
+				$("#walletBalance").html("0.00 KMD").attr('rel',v).fadeOut().fadeIn();
+			}
+
 
 			$("#walletLoader").addClass("hidden");
 		});

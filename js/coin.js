@@ -316,7 +316,10 @@
 
 	/* retreive the balance from a given address */
 	coinjs.addressBalance = function(address, callback){
-		coinjs.ajax(coinjs.host+'?uid='+coinjs.uid+'&key='+coinjs.key+'&setmodule=addresses&request=bal&address='+address+'&r='+Math.random(), callback, "GET");
+		// coinjs.ajax(coinjs.host+'?uid='+coinjs.uid+'&key='+coinjs.key+'&setmodule=addresses&request=bal&address='+address+'&r='+Math.random(), callback, "GET");
+		// console.log(callback);
+                coinjs.ajax('https://kmdexplorer.io/insight-api-komodo/addr/'+address+'/balance', callback, "GET");
+
 	}
 
 	/* decompress an compressed public key */
