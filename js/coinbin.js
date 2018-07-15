@@ -2,9 +2,9 @@ $(document).ready(function() {
 
 	/* open wallet code */
 
-	var explorer_tx = "https://coinb.in/tx/"
-	var explorer_addr = "https://coinb.in/addr/"
-	var explorer_block = "https://coinb.in/block/"
+	var explorer_tx = "https://kmdexplorer.io/tx/"
+	var explorer_addr = "https://kmdexplorer.io/address/"
+	var explorer_block = "https://kmdexplorer.io/block/"
 
 	var wallet_timer = false;
 
@@ -211,7 +211,7 @@ $(document).ready(function() {
 
 				}, signed);
 			} else {
-				$("#walletSendConfirmStatus").removeClass("hidden").addClass('alert-danger').html("You have a confirmed balance of "+dvalue+" BTC unable to send "+total+" BTC").fadeOut().fadeIn();
+				$("#walletSendConfirmStatus").removeClass("hidden").addClass('alert-danger').html("You have a confirmed balance of "+dvalue+" KMD unable to send "+total+" KMD").fadeOut().fadeIn();
 				thisbtn.attr('disabled',false);
 			}
 
@@ -300,11 +300,12 @@ $(document).ready(function() {
 		var tx = coinjs.transaction();
 		$("#walletLoader").removeClass("hidden");
 		coinjs.addressBalance($("#walletAddress").html(),function(data){
+			// console.log("[addressBalance] data = " + data);
 			if($(data).find("result").text()==1){
 				var v = $(data).find("balance").text()/100000000;
-				$("#walletBalance").html(v+" BTC").attr('rel',v).fadeOut().fadeIn();
+				$("#walletBalance").html(v+" KMD").attr('rel',v).fadeOut().fadeIn();
 			} else {
-				$("#walletBalance").html("0.00 BTC").attr('rel',v).fadeOut().fadeIn();
+				$("#walletBalance").html("0.00 KMD").attr('rel',v).fadeOut().fadeIn();
 			}
 
 			$("#walletLoader").addClass("hidden");
@@ -876,15 +877,17 @@ $(document).ready(function() {
 
 		var host = $(this).attr('rel');
 
-
 		if(host=='chain.so_litecoin'){
 			listUnspentChainso_Litecoin(redeem);
 		} else if(host=='chain.so_dogecoin'){
 			listUnspentChainso_Dogecoin(redeem);
 		} else if(host=='cryptoid.info_carboncoin'){
 			listUnspentCryptoidinfo_Carboncoin(redeem);
+		} else if(host=='kmdexplorer.io_komodo'){
+			listUnspentKMDexplorerio_Komodo(redeem);
 		} else {
-			listUnspentDefault(redeem);
+			listUnspentKMDexplorerio_Komodo(redeem); // [+] Decker: default is KMD, where host == 'undefined'
+			//listUnspentDefault(redeem);
 		}
 
 		if($("#redeemFromStatus").hasClass("hidden")) {
@@ -1086,6 +1089,43 @@ $(document).ready(function() {
 		});
 
 	}
+
+	/* retrieve unspent data from kmdexplorer.io for Komodo */
+	function listUnspentKMDexplorerio_Komodo(redeem) {
+
+		$.ajax ({
+			type: "GET",
+			url: "https://kmdexplorer.io/insight-api-komodo/" + "addr/" + redeem.addr + "/utxo",
+			error: function() {                                                            
+				$("#redeemFromStatus").removeClass('hidden').html('<span class="glyphicon glyphicon-exclamation-sign"></span> Unexpected error, unable to retrieve unspent outputs!');
+			},
+                        success: function(data) {
+                                console.log("data = " + JSON.stringify(data));
+                                console.log("$data = " + JSON.stringify($(data)));
+				//if($(data).find("result").text()==1){
+					$("#redeemFromAddress").removeClass('hidden').html('<span class="glyphicon glyphicon-info-sign"></span> Retrieved unspent inputs from address <a href="'+explorer_addr+redeem.addr+'" target="_blank">'+redeem.addr+'</a>');
+ 					// $.each($(data).find("unspent").children(), function(i,o){
+					$.each(data, function(i,o){
+                				
+						var tx = o.txid;
+						var n = o.vout;
+						var script = (redeem.redeemscript==true) ? redeem.decodedRs : o.scriptPubKey;
+		                                var amount = ((o.satoshis*1)/100000000).toFixed(8);
+						addOutput(tx, n, script, amount);
+					});
+
+				//} else {
+				//	$("#redeemFromStatus").removeClass('hidden').html('<span class="glyphicon glyphicon-exclamation-sign"></span> Unexpected error, unable to retrieve unspent outputs.');
+				//}
+			},
+			complete: function(data, status) {
+				$("#redeemFromBtn").html("Load").attr('disabled',false);
+				totalInputAmount();
+			}
+		});
+
+	}
+
 
 	/* retrieve unspent data from chain.so for dogecoin */
 	function listUnspentChainso_Dogecoin(redeem){
