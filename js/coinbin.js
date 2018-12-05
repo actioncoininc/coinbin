@@ -1773,7 +1773,9 @@ $(document).ready(function() {
 	$('a[data-toggle="tab"]').on('click', function(e) {
 		e.preventDefault();
 		if(e.target){
+			if (e.target.tagName.toLowerCase() == "a") { // [+] Decker
 			history.pushState(null, null, '#'+$(e.target).attr('href').substr(1));
+			}
 		}
 	});
 
