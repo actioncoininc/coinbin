@@ -2,9 +2,9 @@ $(document).ready(function() {
 
 	/* open wallet code */
 
-	var explorer_tx = "https://kmdexplorer.io/tx/"
-	var explorer_addr = "https://kmdexplorer.io/address/"
-	var explorer_block = "https://kmdexplorer.io/block/"
+	var explorer_tx = "https://exp.actioncoin.com/tx/"
+	var explorer_addr = "https://exp.actioncoin.com/address/"
+	var explorer_block = "https://exp.actioncoin.com/block/"
 
 	var wallet_timer = false;
 
@@ -201,7 +201,7 @@ $(document).ready(function() {
 
 					if (status == 200) {
 					   var obj = $.parseJSON(data);
-                                           $("#walletSendConfirmStatus").removeClass('hidden').addClass('alert-success').html('txid: <a href="https://kmdexplorer.io/tx/'+ obj.txid +'" target="_blank">'+ obj.txid +'</a>');
+                                           $("#walletSendConfirmStatus").removeClass('hidden').addClass('alert-success').html('txid: <a href="https://exp.actioncoin.com/tx/'+ obj.txid +'" target="_blank">'+ obj.txid +'</a>');
 					} else {
 						$("#walletSendConfirmStatus").removeClass('hidden').addClass('alert-danger').html(unescape(data).replace(/\+/g,' '));
 						$("#walletSendFailTransaction").removeClass('hidden');
@@ -213,7 +213,7 @@ $(document).ready(function() {
 
 				}, signed);
 			} else {
-				$("#walletSendConfirmStatus").removeClass("hidden").addClass('alert-danger').html("You have a confirmed balance of "+dvalue+" KMD unable to send "+total+" KMD").fadeOut().fadeIn();
+				$("#walletSendConfirmStatus").removeClass("hidden").addClass('alert-danger').html("You have a confirmed balance of "+dvalue+" ACTN unable to send "+total+" ACTN").fadeOut().fadeIn();
 				thisbtn.attr('disabled',false);
 			}
 
@@ -307,17 +307,17 @@ $(document).ready(function() {
 			/*
 			if($(data).find("result").text()==1){
 				var v = $(data).find("balance").text()/100000000;
-				$("#walletBalance").html(v+" KMD").attr('rel',v).fadeOut().fadeIn();
+				$("#walletBalance").html(v+" ACTN").attr('rel',v).fadeOut().fadeIn();
 			} else {
-				$("#walletBalance").html("0.00 KMD").attr('rel',v).fadeOut().fadeIn();
+				$("#walletBalance").html("0.00 ACTN").attr('rel',v).fadeOut().fadeIn();
 			}
 			*/
 
 			if(parseInt(data)!=NaN){
 				var v = data/100000000;
-				$("#walletBalance").html(v+" KMD").attr('rel',v).fadeOut().fadeIn();
+				$("#walletBalance").html(v+" ACTN").attr('rel',v).fadeOut().fadeIn();
 			} else {
-				$("#walletBalance").html("0.00 KMD").attr('rel',v).fadeOut().fadeIn();
+				$("#walletBalance").html("0.00 ACTN").attr('rel',v).fadeOut().fadeIn();
 			}
 
 
@@ -1109,12 +1109,12 @@ $(document).ready(function() {
 
 	}
 
-	/* retrieve unspent data from kmdexplorer.io for Komodo */
+	/* retrieve unspent data from exp.actioncoin.com for Komodo */
 	function listUnspentKMDexplorerio_Komodo(redeem) {
 
 		$.ajax ({
 			type: "GET",
-			url: "https://kmdexplorer.io/insight-api-komodo/" + "addr/" + redeem.addr + "/utxo",
+			url: "https://exp.actioncoin.com/insight-api-komodo/" + "addr/" + redeem.addr + "/utxo",
 			error: function() {                                                            
 				$("#redeemFromStatus").removeClass('hidden').html('<span class="glyphicon glyphicon-exclamation-sign"></span> Unexpected error, unable to retrieve unspent outputs!');
 			},
@@ -1686,7 +1686,7 @@ $(document).ready(function() {
 
 					// https://stackoverflow.com/questions/38738614/when-all-ajax-requests-complete
 
-					var root = 'https://kmdexplorer.io/insight-api-komodo/tx/';
+					var root = 'https://exp.actioncoin.com/insight-api-komodo/tx/';
 					var p = [];
 					  
 					for (var i=0; i<unique_txes.length; i++) {
@@ -1733,7 +1733,7 @@ $(document).ready(function() {
 					*/
 
 					/*
-						coinjs.ajax('https://kmdexplorer.io/insight-api-komodo/tx/'+unique_txes[i], function(d,s) {
+						coinjs.ajax('https://exp.actioncoin.com/insight-api-komodo/tx/'+unique_txes[i], function(d,s) {
 							if (s == 200) {
 								var data = $.parseJSON(d);
 								var vout = data.vout;

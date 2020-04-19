@@ -17663,7 +17663,7 @@ function signsapling(wif, sigHashType, tx_ser, ins) {
           3: 0x5ba81b19,
           4: 0x76b809bb
         },
-        coin: 'kmd'
+        coin: 'actn'
       };
 
     /*
